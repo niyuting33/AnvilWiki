@@ -117,5 +117,5 @@
 
 ## Git 存档
 
-- 基线提交：待 Task 4 创建。
-- 验收文档提交：待 Task 4 创建。
+- 基线提交：`9424a6b3a66d649333af3dc448f8ba0add834681`（`chore: archive Emberville launch baseline`）。
+- 验收文档提交：本段哈希回填使用后续文档提交保存，避免修改已经生成的基线提交。
