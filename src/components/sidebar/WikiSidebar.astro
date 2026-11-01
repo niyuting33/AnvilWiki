@@ -19,6 +19,7 @@ import { getUi } from '~/i18n/ui';
 import { getDynamicNavigation } from '~/lib/navigation';
 import { localizePath } from '~/lib/url';
 import { site } from '~/config/site';
+import { PRIMARY_NAV_KEYS } from '~/config/navigation';
 
 interface Props {
   locale: Locale;
@@ -31,7 +32,9 @@ const { locale, currentPath = '', compact = false } = Astro.props;
 const ui = getUi(locale);
 const nav = ui.nav as Record<string, string>;
 const shared = ui.shared;
-const groups = await getDynamicNavigation(locale, nav);
+const groups = (await getDynamicNavigation(locale, nav)).filter((group) =>
+  PRIMARY_NAV_KEYS.includes(group.key as (typeof PRIMARY_NAV_KEYS)[number]),
+);
 ---
 <div class="space-y-6">
     <div class="max-h-[calc(100vh-6rem)] overflow-y-auto pr-2">

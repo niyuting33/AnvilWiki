@@ -8,6 +8,7 @@
 import { Icon } from 'astro-icon/components';
 import LocaleLayout from '~/components/layout/LocaleLayout.astro';
 import ArticleCover from '~/components/article/ArticleCover.astro';
+import CategoryVideo from '~/components/video/CategoryVideo.astro';
 import { NAVIGATION_CONFIG } from '~/config/navigation';
 import { type Locale } from '~/i18n/routing';
 import { getUi } from '~/i18n/ui';
@@ -90,6 +91,8 @@ const jsonLd = [
       </div>
       <p class="mt-2 max-w-2xl text-muted-foreground">{description}</p>
     </header>
+
+    {entries.length > 0 && <CategoryVideo category={category} locale={locale} />}
 
     {
       entries.length === 0 ? (

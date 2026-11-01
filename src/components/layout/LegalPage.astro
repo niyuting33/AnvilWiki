@@ -24,7 +24,7 @@ const { locale, title, description = `${title} for ${site.name}.`, lastUpdated }
     <h1 class="text-3xl font-extrabold tracking-tight md:text-4xl">{title}</h1>
     {lastUpdated && <p class="mt-2 text-sm text-muted-foreground">Last updated: {lastUpdated}</p>}
     <div
-      class="prose prose-lg mt-8 max-w-none dark:prose-invert prose-headings:scroll-mt-20 prose-a:text-nav"
+      class="prose prose-lg prose-invert mt-8 max-w-none prose-headings:scroll-mt-20 prose-a:text-nav"
     >
       <slot />
     </div>

@@ -1,0 +1,37 @@
+---
+import LocaleLayout from '~/components/layout/LocaleLayout.astro';
+import CategoryVideo from '~/components/video/CategoryVideo.astro';
+
+const title = 'Emberville 职业系统、切换与技能继承指南';
+const description =
+  '了解 Emberville 职业切换、技能继承，以及 Steam Next Fest Demo 中 Knight、Mage、Wanderer 与 Archer 的当前验证状态。';
+---
+
+<LocaleLayout locale="zh" {title} {description} availableLocales={['en', 'zh']}>
+  <header class="mx-auto max-w-4xl text-center">
+    <p class="text-sm font-bold uppercase tracking-[0.2em] text-nav">Demo 数据会明确标注</p>
+    <h1 class="mt-3 text-4xl font-black tracking-tight md:text-5xl">Emberville 职业</h1>
+    <p class="mt-4 text-lg leading-8 text-muted-foreground">
+      游戏允许同一角色切换战斗职业，并从已学习职业中继承主动或被动技能。具体数值和限制仍以正式版本为准。
+    </p>
+  </header>
+  <div class="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-2">
+    <a
+      href="/zh/classes/class-system/"
+      class="rounded-xl border bg-card p-6 transition hover:border-nav"
+    >
+      <h2 class="text-xl font-bold">职业切换与技能继承</h2>
+      <p class="mt-2 text-muted-foreground">区分官方确认机制、Demo 观察结果和仍待补充的信息。</p>
+    </a>
+    <a
+      href="/zh/classes/demo-classes/"
+      class="rounded-xl border bg-card p-6 transition hover:border-nav"
+    >
+      <h2 class="text-xl font-bold">Demo 职业概览</h2>
+      <p class="mt-2 text-muted-foreground">
+        查看 Knight、Mage、Wanderer 和 Archer 的当前证据状态。
+      </p>
+    </a>
+  </div>
+  <div class="mx-auto mt-10 max-w-4xl"><CategoryVideo category="classes" locale="zh" /></div>
+</LocaleLayout>

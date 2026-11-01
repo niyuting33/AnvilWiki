@@ -17,9 +17,7 @@ export function getStaticPaths() {
   // Only non-default locales — default is at /faq.
   // `locales` is a module-level export (visible inside getStaticPaths,
   // unlike same-file top-level const — see AGENTS.md Astro 5 gotcha #3).
-  return locales
-    .filter((l) => l !== defaultLocale)
-    .map((l) => ({ params: { locale: l } }));
+  return locales.filter((l) => l !== defaultLocale).map((l) => ({ params: { locale: l } }));
 }
 
 const { locale: localeParam } = Astro.params;
@@ -33,7 +31,12 @@ const faqPath = localizePath('/faq', locale);
 const alternates = languageAlternates((loc) => localizePath('/faq', loc), locales);
 const jsonLd = [
   ...(faq.items.length > 0 ? [faqPageJsonLd(faq.items)] : []),
-  simpleBreadcrumbJsonLd({ pageLabel: faq.title, path: faqPath, locale, homeLabel: (ui.nav as Record<string, string>).home }),
+  simpleBreadcrumbJsonLd({
+    pageLabel: faq.title,
+    path: faqPath,
+    locale,
+    homeLabel: (ui.nav as Record<string, string>).home,
+  }),
 ];
 ---
 
@@ -43,6 +46,7 @@ const jsonLd = [
   description={faq.description}
   alternates={alternates}
   jsonLd={jsonLd}
+  noindex={faq.items.length === 0}
 >
   <FaqSection title={faq.title} description={faq.description} items={faq.items} />
 </LocaleLayout>

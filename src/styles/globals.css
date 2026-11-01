@@ -12,11 +12,11 @@
 @layer base {
   :root {
     /* Light mode theme color — Anvil orange (forge fire). */
-    --brand: 22 90% 52%;
-    --brand-light: 22 90% 62%;
+    --brand: 20 69% 52%;
+    --brand-light: 20 69% 62%;
     /* Split H/S for derived shades (e.g. darker button backgrounds). */
-    --brand-h: 22;
-    --brand-s: 90%;
+    --brand-h: 20;
+    --brand-s: 69%;
     /* Text-safe shade of the brand: --brand at 52% lightness is only 3.1:1
        on white (WCAG AA needs 4.5:1 for text). Derived from the H/S splits,
        so fork themes that only edit --brand/--brand-light stay consistent. */
@@ -25,10 +25,10 @@
 
   .dark {
     /* Dark mode theme color — slightly deeper. */
-    --brand: 22 85% 48%;
-    --brand-light: 22 85% 58%;
-    --brand-h: 22;
-    --brand-s: 85%;
+    --brand: 20 64% 48%;
+    --brand-light: 20 64% 58%;
+    --brand-h: 20;
+    --brand-s: 64%;
     --brand-text: var(--brand-h) var(--brand-s) 52%;
   }
 }
@@ -36,22 +36,22 @@
 /* Other design tokens — these reference --brand, so they auto-follow theme changes. */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
-    --border: 214 32% 91%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --background: 207 43% 9%;
+    --foreground: 42 32% 94%;
+    --muted: 198 27% 16%;
+    --muted-foreground: 43 14% 70%;
+    --border: 174 17% 25%;
+    --card: 204 35% 12%;
+    --card-foreground: 42 32% 94%;
   }
 
   .dark {
-    --background: 222 47% 7%;
+    --background: 211 52% 6%;
     --foreground: 210 40% 98%;
-    --muted: 217 33% 14%;
-    --muted-foreground: 215 20% 65%;
-    --border: 217 33% 18%;
-    --card: 222 47% 10%;
+    --muted: 202 31% 12%;
+    --muted-foreground: 184 12% 65%;
+    --border: 185 18% 18%;
+    --card: 207 41% 9%;
     --card-foreground: 210 40% 98%;
   }
 
@@ -72,16 +72,42 @@
   }
 
   body {
+    overflow-x: clip;
     background-color: hsl(var(--background));
+    background-image:
+      linear-gradient(hsl(var(--background) / 0.5), hsl(var(--background) / 0.5)),
+      url('/images/page-bg-game.webp');
+    background-position: center top;
+    background-size: cover;
+    background-attachment: fixed;
     color: hsl(var(--foreground));
     font-feature-settings:
       'rlig' 1,
       'calt' 1;
   }
 
+  html.dark body {
+    background-image:
+      linear-gradient(hsl(var(--background) / 0.66), hsl(var(--background) / 0.66)),
+      url('/images/page-bg-game.webp');
+  }
+
+  html.black body {
+    background-image:
+      linear-gradient(hsl(var(--background) / 0.78), hsl(var(--background) / 0.78)),
+      url('/images/page-bg-game.webp');
+  }
+
+  @media (max-width: 767px) {
+    body {
+      /* Fixed image backgrounds can stutter on mobile Safari. */
+      background-attachment: scroll;
+    }
+  }
+
   /* Prevent FOUC: apply dark class before paint. */
   html {
-    color-scheme: light;
+    color-scheme: dark;
   }
   html.dark {
     color-scheme: dark;
@@ -90,6 +116,11 @@
 
 /* Utility classes referencing the theme token. */
 @layer components {
+  .hero-media {
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+  }
+
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2;
     /* Button background needs white text contrast ≥ 4.5:1 (WCAG AA).

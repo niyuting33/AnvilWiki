@@ -28,11 +28,20 @@ export interface NavigationItem {
 
 /** Menu order = array order — every consumer renders by physical position. */
 export const NAVIGATION_CONFIG: NavigationItem[] = [
-  { key: 'bosses', path: '/bosses', icon: 'lucide:swords', isContentType: true },
   { key: 'guides', path: '/guides', icon: 'lucide:book-open', isContentType: true },
+  { key: 'classes', path: '/classes', icon: 'lucide:shield', isContentType: true },
+  { key: 'skills', path: '/skills', icon: 'lucide:sparkles', isContentType: true },
+  { key: 'mechanics', path: '/mechanics', icon: 'lucide:settings-2', isContentType: true },
+  { key: 'bosses', path: '/bosses', icon: 'lucide:swords', isContentType: true },
   { key: 'items', path: '/items', icon: 'lucide:package', isContentType: true },
-  { key: 'codes', path: '/codes', icon: 'lucide:gift', isContentType: true },
+  { key: 'characters', path: '/characters', icon: 'lucide:users', isContentType: true },
+  { key: 'builds', path: '/builds', icon: 'lucide:folder', isContentType: true },
+  { key: 'tier-list', path: '/tier-list', icon: 'lucide:bar-chart-3', isContentType: true },
 ];
+
+/** Content categories shown in the primary header. Keep empty/future categories in
+ * NAVIGATION_CONFIG for routing and schema validation without advertising them. */
+export const PRIMARY_NAV_KEYS = ['guides', 'classes', 'skills', 'mechanics', 'bosses'] as const;
 
 /** Derived list of content type slugs (e.g. ['bosses', 'guides', 'items', 'codes']). */
 export const CONTENT_TYPES: string[] = NAVIGATION_CONFIG.map((n) => n.key);

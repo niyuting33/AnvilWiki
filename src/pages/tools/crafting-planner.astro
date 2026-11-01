@@ -1,0 +1,29 @@
+---
+import CraftingPlanner from '~/components/tools/CraftingPlanner.astro';
+import LocaleLayout from '~/components/layout/LocaleLayout.astro';
+import { defaultLocale } from '~/i18n/routing';
+
+const title = 'Emberville Crafting Planner (Beta)';
+const description =
+  'Plan Emberville crafting goals with verified recipes, compare required materials with your inventory, and create a clear missing-material shopping list.';
+---
+
+<LocaleLayout
+  locale={defaultLocale}
+  {title}
+  {description}
+  availableLocales={[defaultLocale]}
+  noindex
+>
+  <header class="mx-auto max-w-3xl text-center">
+    <p class="text-sm font-bold uppercase tracking-[0.2em] text-nav">Data-safe beta tool</p>
+    <h1 class="mt-3 text-4xl font-black tracking-tight md:text-5xl">Crafting Planner</h1>
+    <p class="mt-4 text-base leading-7 text-muted-foreground md:text-lg">
+      Choose a verified Emberville recipe, enter what you already own, and see exactly what is still
+      missing. Your inventory is stored only in this browser.
+    </p>
+  </header>
+  <div class="mt-10">
+    <CraftingPlanner />
+  </div>
+</LocaleLayout>

@@ -90,13 +90,34 @@ describe('isAssetPath', () => {
   });
 
   test('the rest of the union', () => {
-    for (const p of ['/a.png', '/a.jpg', '/a.jpeg', '/a.gif', '/a.webp', '/a.avif', '/a.svg', '/a.ico', '/a.json', '/a.xml', '/a.txt', '/a.css', '/a.js', '/a.woff', '/a.woff2']) {
+    for (const p of [
+      '/a.png',
+      '/a.jpg',
+      '/a.jpeg',
+      '/a.gif',
+      '/a.webp',
+      '/a.avif',
+      '/a.svg',
+      '/a.ico',
+      '/a.json',
+      '/a.xml',
+      '/a.txt',
+      '/a.css',
+      '/a.js',
+      '/a.woff',
+      '/a.woff2',
+    ]) {
       expect(isAssetPath(p)).toBe(true);
     }
   });
 
   test('case-insensitive', () => {
     expect(isAssetPath('/images/A.PNG')).toBe(true);
+  });
+
+  test('asset URLs remain assets when they include cache or fragment suffixes', () => {
+    expect(isAssetPath('/favicon-32x32.png?v=emberville-1')).toBe(true);
+    expect(isAssetPath('/manual.pdf#install')).toBe(true);
   });
 
   test('pages are never assets', () => {
@@ -132,10 +153,14 @@ function makeFixture(files: Record<string, string>): string {
 
 function runCheckContent(root: string): { status: number; stdout: string } {
   try {
-    const stdout = execFileSync(process.execPath, [TSX_CLI, join(repoRoot, 'scripts', 'check-content.ts')], {
-      cwd: root,
-      encoding: 'utf8',
-    });
+    const stdout = execFileSync(
+      process.execPath,
+      [TSX_CLI, join(repoRoot, 'scripts', 'check-content.ts')],
+      {
+        cwd: root,
+        encoding: 'utf8',
+      },
+    );
     return { status: 0, stdout };
   } catch (e) {
     const err = e as { status?: number; stdout?: string };
@@ -155,8 +180,7 @@ describe('check-content — image-wrapped links and asset counting (behavioral)'
     'ja/bosses/wrapped.mdx': `${FM}[![cover](/images/a.webp)](/bosses/a/)\n`,
     // Rule 6: exactly 2 real page links; the two asset text-links must not
     // pad the count (old behavior counted 4 → no warning).
-    'en/guides/count.mdx':
-      `${FM}See [one](/guides/a/) and [two](/guides/b/) plus [sheet](/images/sheet.png) and [clip](/media/clip.mp4).\n`,
+    'en/guides/count.mdx': `${FM}See [one](/guides/a/) and [two](/guides/b/) plus [sheet](/images/sheet.png) and [clip](/media/clip.mp4).\n`,
   });
   const run = runCheckContent(root);
 
@@ -182,12 +206,16 @@ describe('check-content — image-wrapped links and asset counting (behavioral)'
 describe('cross-script alignment contracts', () => {
   test('site.ts domain parsed with BOTH quote styles in check-config and template-audit', () => {
     for (const f of ['scripts/check-config.ts', 'scripts/template-audit.ts']) {
-      expect(readRepo(f)).toContain("domain:\\s*['\"]([^'\"]+)['\"]");
+      expect(readRepo(f)).toContain('domain:\\s*[\'"]([^\'"]+)[\'"]');
     }
   });
 
   test('draft detection is frontmatter-only with the shared regex in all three scripts', () => {
-    for (const f of ['scripts/check-i18n.ts', 'scripts/refresh-audit.ts', 'scripts/template-audit.ts']) {
+    for (const f of [
+      'scripts/check-i18n.ts',
+      'scripts/refresh-audit.ts',
+      'scripts/template-audit.ts',
+    ]) {
       const src = readRepo(f);
       expect(src).toContain("split('---')[1]");
       expect(src).toContain('/^draft:\\s*true\\s*$/m');
@@ -196,9 +224,7 @@ describe('cross-script alignment contracts', () => {
 
   test('nav-key regex is left-bounded in check-config and template-audit', () => {
     for (const f of ['scripts/check-config.ts', 'scripts/template-audit.ts']) {
-      expect(readRepo(f)).toContain(
-        "(?<=[{,\\s])(?<!\\/\\/\\s*)key:\\s*['\"]([^'\"]+)['\"]",
-      );
+      expect(readRepo(f)).toContain('(?<=[{,\\s])(?<!\\/\\/\\s*)key:\\s*[\'"]([^\'"]+)[\'"]');
     }
   });
 

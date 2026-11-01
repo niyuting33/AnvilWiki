@@ -19,15 +19,28 @@ const footer = ui.footer;
 // /recent and /tags used to be orphan pages with zero internal inbound links.
 const shared = ui.shared;
 
-const socials = ([
-  { key: 'playGame', href: site.social.official, icon: 'lucide:external-link' },
-  { key: 'officialDiscord', href: site.social.discord, icon: 'lucide:message-circle' },
-  { key: 'officialYoutube', href: site.social.youtube, icon: 'lucide:youtube' },
-  { key: 'officialTwitter', href: site.social.twitter, icon: 'lucide:twitter' },
-  { key: 'officialReddit', href: site.social.reddit, icon: 'lucide:globe' },
-] satisfies Array<{ key: keyof typeof footer; href: string | undefined; icon: string }>).filter((s) => s.href);
+const socials = (
+  [
+    { key: 'officialWebsite', href: site.social.website, icon: 'lucide:globe' },
+    { key: 'playGame', href: site.social.official, icon: 'lucide:external-link' },
+    { key: 'officialDiscord', href: site.social.discord, icon: 'lucide:message-circle' },
+    { key: 'officialYoutube', href: site.social.youtube, icon: 'lucide:youtube' },
+    { key: 'officialTwitter', href: site.social.twitter, icon: 'lucide:twitter' },
+    { key: 'officialReddit', href: site.social.reddit, icon: 'lucide:globe' },
+    { key: 'officialInstagram', href: site.social.instagram, icon: 'lucide:instagram' },
+    { key: 'officialFacebook', href: site.social.facebook, icon: 'lucide:facebook' },
+    { key: 'officialBluesky', href: site.social.bluesky, icon: 'lucide:cloud' },
+    { key: 'officialLinktree', href: site.social.linktree, icon: 'lucide:link' },
+  ] satisfies Array<{ key: keyof typeof footer; href: string | undefined; icon: string }>
+).filter((s) => s.href);
 
-const legalLinks: Array<keyof typeof footer> = ['about', 'faq', 'privacyPolicy', 'termsOfService', 'copyright', 'contact'];
+const legalLinks: Array<keyof typeof footer> = [
+  'about',
+  'privacyPolicy',
+  'termsOfService',
+  'copyright',
+  'contact',
+];
 ---
 
 <footer class="mt-16 border-t border-border bg-muted/30">
@@ -51,10 +64,10 @@ const legalLinks: Array<keyof typeof footer> = ['about', 'faq', 'privacyPolicy',
         </p>
       </div>
 
-      {/* Socials */}
+      {/* Official links */}
       <div>
         <h2 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          {footer.community ?? 'Community'}
+          {footer.officialLinks}
         </h2>
         <ul class="mt-3 space-y-2">
           {
@@ -77,7 +90,9 @@ const legalLinks: Array<keyof typeof footer> = ['about', 'faq', 'privacyPolicy',
 
       {/* Legal */}
       <div>
-        <h2 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">{footer.legal ?? 'Legal'}</h2>
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+          {footer.legal ?? 'Legal'}
+        </h2>
         <ul class="mt-3 space-y-2">
           {
             legalLinks.map((key) => (
@@ -99,12 +114,12 @@ const legalLinks: Array<keyof typeof footer> = ['about', 'faq', 'privacyPolicy',
     </div>
 
     <div class="mt-8 space-y-1 border-t border-border pt-6">
-      {/* Copyright line and the fan-site legal notice are SEPARATE lines —
+      {
+        /* Copyright line and the fan-site legal notice are SEPARATE lines —
           a `copyrightText ?? legalNotice` short-circuit left forks (whose
-          CLI rewrites copyrightText without the disclaimer) with no notice. */}
-      {footer.copyrightText && (
-        <p class="text-xs text-muted-foreground">{footer.copyrightText}</p>
-      )}
+          CLI rewrites copyrightText without the disclaimer) with no notice. */
+      }
+      {footer.copyrightText && <p class="text-xs text-muted-foreground">{footer.copyrightText}</p>}
       {site.legalNotice && <p class="text-xs text-muted-foreground">{site.legalNotice}</p>}
     </div>
   </div>

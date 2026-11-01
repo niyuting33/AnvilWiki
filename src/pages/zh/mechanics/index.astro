@@ -1,0 +1,35 @@
+---
+import LocaleLayout from '~/components/layout/LocaleLayout.astro';
+import CategoryVideo from '~/components/video/CategoryVideo.astro';
+
+const title = 'Emberville 游戏机制 — 战斗、Kymia、制作与重建';
+const description =
+  '了解 Emberville 的武器连招、职业技能继承、Kymia、采集制作、Estate 与城镇重建机制，并区分官方信息与 Demo 观察。';
+---
+
+<LocaleLayout locale="zh" {title} {description} availableLocales={['en', 'zh']}>
+  <header class="mx-auto max-w-4xl text-center">
+    <p class="text-sm font-bold uppercase tracking-[0.2em] text-nav">已核实机制说明</p>
+    <h1 class="mt-3 text-4xl font-black tracking-tight md:text-5xl">Emberville 游戏机制</h1>
+    <p class="mt-4 text-lg leading-8 text-muted-foreground">
+      先理解战斗、技能、制作与城镇重建之间的关系，再决定职业和成长路线。
+    </p>
+  </header>
+  <div class="mx-auto mt-10 grid max-w-4xl gap-5 md:grid-cols-2">
+    <a
+      href="/zh/mechanics/combat-and-skill-inheritance/"
+      class="rounded-xl border bg-card p-6 transition hover:border-nav"
+    >
+      <h2 class="text-xl font-bold">战斗、武器连招与技能继承</h2>
+      <p class="mt-2 text-muted-foreground">查看职业能力和武器连招如何构成不同战斗风格。</p>
+    </a>
+    <a
+      href="/zh/mechanics/kymia-crafting-and-town-rebuilding/"
+      class="rounded-xl border bg-card p-6 transition hover:border-nav"
+    >
+      <h2 class="text-xl font-bold">Kymia、制作、Estate 与城镇重建</h2>
+      <p class="mt-2 text-muted-foreground">了解探索、救援居民、生产系统和据点成长的联系。</p>
+    </a>
+  </div>
+  <div class="mx-auto mt-10 max-w-4xl"><CategoryVideo category="mechanics" locale="zh" /></div>
+</LocaleLayout>

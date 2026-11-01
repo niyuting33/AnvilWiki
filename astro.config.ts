@@ -97,7 +97,8 @@ function buildLastmodMap(
       const rel = path.relative(base, p).replace(/\.mdx$/, '');
       const [loc, cat, ...rest] = rel.split(path.sep);
       const slugPath = rest.join('/');
-      const articlePath = loc === defaultLocale ? `/${cat}/${slugPath}` : `/${loc}/${cat}/${slugPath}`;
+      const articlePath =
+        loc === defaultLocale ? `/${cat}/${slugPath}` : `/${loc}/${cat}/${slugPath}`;
       // Same true-spelling rule as the draft check above (inline comments
       // included): a `noindex: True` page must not ship in the sitemap it
       // asked out of.
@@ -175,7 +176,10 @@ function buildLastmodMap(
         if (!entry.endsWith('.md')) continue;
         const src = fs.readFileSync(path.join(dir, entry), 'utf8');
         const fm = extractFrontmatter(src);
-        const iso = fm.match(/^updated:\s*(.+)$/m)?.[1]?.trim().replace(/['"]/g, '');
+        const iso = fm
+          .match(/^updated:\s*(.+)$/m)?.[1]
+          ?.trim()
+          .replace(/['"]/g, '');
         if (!iso) continue;
         const date = new Date(iso);
         if (Number.isNaN(date.getTime())) continue;
@@ -226,7 +230,10 @@ function decodeSitemapPath(url: string): string {
   }
 }
 
-const noindexPaths = new Set<string>();
+const noindexPaths = new Set<string>([
+  '/tools/crafting-planner',
+  ...locales.map((locale) => (locale === defaultLocale ? '/faq' : `/${locale}/faq`)),
+]);
 const localeCoverage = new Map<string, Set<string>>();
 const detailCoverage = new Map<string, Set<string>>();
 const categoryCoverage = new Map<string, Set<string>>();

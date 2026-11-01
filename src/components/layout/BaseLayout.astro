@@ -162,8 +162,8 @@ const privacyLabel = consent?.privacyLabel ?? footerStrings.privacyPolicy ?? 'Pr
         SVG first (sharp modern browsers), 32px PNG fallback; the legacy
         favicon.ico stays in public/ but is never referenced (sharp can't
         emit ICO — see scripts/gen-assets.ts). */}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-32x32.png?v=emberville-1" type="image/png" sizes="32x32" />
+    <link rel="icon" href="/favicon-16x16.png?v=emberville-1" type="image/png" sizes="16x16" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
@@ -172,7 +172,7 @@ const privacyLabel = consent?.privacyLabel ?? footerStrings.privacyPolicy ?? 'Pr
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     {noindex ? (
-      <meta name="robots" content="noindex, nofollow" />
+      <meta name="robots" content="noindex, follow" />
     ) : (
       /* Google Discover large-image previews require explicit permission —
          without this, covers never surface as large preview images (v2.0). */

@@ -19,7 +19,7 @@ interface Props {
 const { videoId, title = 'Watch trailer' } = Astro.props;
 ---
 {videoId && (
-  <section class="border-b border-border">
+  <section id="official-trailer" class="scroll-mt-20 border-b border-border">
     <div class="mx-auto max-w-4xl px-4 py-8">
       <LazyYouTube videoId={videoId} title={title} />
     </div>

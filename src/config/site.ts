@@ -25,12 +25,18 @@ export interface SiteConfig {
    */
   contactEmail?: string;
   social: {
-    /** Official game website URL (the game itself, not the wiki). */
+    /** Official store / play URL. */
     official: string;
+    /** Official developer or game website. */
+    website?: string;
     discord?: string;
     youtube?: string;
     twitter?: string;
     reddit?: string;
+    instagram?: string;
+    facebook?: string;
+    bluesky?: string;
+    linktree?: string;
   };
   /**
    * Canonical URLs about the GAME (Steam page, official site, Wikipedia entry…).
@@ -62,37 +68,48 @@ export interface SiteConfig {
 }
 
 export const site: SiteConfig = {
-  name: 'Anvil Quest Wiki',
-  shortName: 'AQ Wiki',
-  description:
-    'Complete Anvil Quest wiki with boss guides, tier lists, codes, item locations, and beginner tips. Every guide carries a last-verified date.',
-  domain: 'anvil.wiki',
-  tagline: 'Your forge for everything Anvil Quest',
-  legalNotice:
-    'Anvil Quest Wiki is a fan-made community site. Not affiliated with or endorsed by the game developer.',
-  // 👉 APPLY TEMPLATE: set a real address if you run no social channels —
-  // the contact page renders it as a mailto link.
+  name: 'Emberville Wiki',
+  shortName: 'E Wiki',
+  description: 'Emberville guides featuring beginner tips, quest walkthroughs, items, bosses, character builds, and the latest game updates.',
+  domain: 'niyuting33.pages.dev',
+  tagline: 'Rebuild the town. Conquer the Vitromotus.',
+  legalNotice: 'Emberville Wiki is a fan-made community site. Not affiliated with or endorsed by the game developer.',
+  // Set a real address if you run no social channels — the contact page
+  // renders it as a mailto link.
   contactEmail: '',
   social: {
-    official: 'https://example.com/anvil-quest',
-    discord: 'https://discord.gg/example',
-    youtube: 'https://youtube.com/@example',
-    twitter: 'https://twitter.com/example',
-    reddit: 'https://reddit.com/r/anvilquest',
+    website: 'https://www.cygnuscross.com/',
+    official: 'https://store.steampowered.com/app/2295170/Emberville/',
+    discord: 'https://discord.gg/emberville',
+    youtube: 'https://www.youtube.com/@embervillegame',
+    twitter: 'https://x.com/EmbervilleGame',
+    reddit: 'https://www.reddit.com/r/Emberville_Official/',
+    instagram: 'https://www.instagram.com/embervillegame/',
+    facebook: 'https://www.facebook.com/EmbervilleGame/',
+    bluesky: 'https://bsky.app/profile/emberville.bsky.social',
+    linktree: 'https://linktr.ee/emberville',
   },
-  // 👉 APPLY TEMPLATE: point these at the game's real canonical pages.
   sameAs: [
-    'https://example.com/anvil-quest',
-    'https://en.wikipedia.org/wiki/Anvil_Quest',
+    'https://www.cygnuscross.com/',
+    'https://store.steampowered.com/app/2295170/Emberville/',
+    'https://discord.gg/emberville',
+    'https://www.youtube.com/@embervillegame',
+    'https://x.com/EmbervilleGame',
+    'https://www.reddit.com/r/Emberville_Official/',
+    'https://www.instagram.com/embervillegame/',
+    'https://www.facebook.com/EmbervilleGame/',
+    'https://bsky.app/profile/emberville.bsky.social',
+    'https://linktr.ee/emberville',
   ],
   game: {
-    name: 'Anvil Quest',
-    platform: 'Roblox',
-    developer: 'Forge Studios',
-    genre: 'Fantasy RPG',
-    releaseDate: '2026-01-15',
+    name: 'Emberville',
+    platform: 'PC (Windows）',
+    developer: 'Cygnus Cross',
+    genre: 'Action RPG / Action-Adventure / Dungeon Crawler',
+    releaseDate: '2027-01-07',
   },
-  // hero.webp is 1200×630 (the recommended OG share aspect ratio).
+  // og:image dims of the SHIPPED hero.webp — if you replace public/images/hero.webp,
+  // update these in src/config/site.ts to match (wrong dims mis-crop share cards).
   ogImageWidth: 1200,
   ogImageHeight: 630,
 };

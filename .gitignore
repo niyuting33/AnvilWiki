@@ -59,3 +59,10 @@ out/
 
 # anvil-ops site-local ops data (metrics --import-aio --save CSV archives) — never swept into a submit PR
 ops/
+
+# local rebrand backups and rejected visual experiments
+public/favicon-backup-before-emberville-20261028/
+public/images/hero-before-pixel-art.webp
+public/images/page-bg-dark.webp
+public/images/page-bg-light.webp
+public/images/page-bg.webp

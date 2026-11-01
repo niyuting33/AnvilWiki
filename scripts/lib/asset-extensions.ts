@@ -52,5 +52,5 @@ const ASSET_RE = new RegExp(`\\.(${ASSET_EXTENSIONS.join('|')})$`, 'i');
 
 /** True when `path` ends with a known static-asset extension (case-insensitive). */
 export function isAssetPath(path: string): boolean {
-  return ASSET_RE.test(path);
+  return ASSET_RE.test(path.split(/[?#]/, 1)[0]);
 }

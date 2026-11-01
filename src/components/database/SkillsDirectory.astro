@@ -1,0 +1,128 @@
+---
+import { EMBERVILLE_CLASSES, EMBERVILLE_SKILLS } from '~/data/emberville-database';
+
+const classNames = new Map(EMBERVILLE_CLASSES.map((entry) => [entry.key, entry.name]));
+const statusLabels = {
+  official: 'Official source',
+  'demo-observed': 'Demo snapshot',
+  pending: '待复核',
+} as const;
+---
+
+<section aria-labelledby="skills-directory-title" data-skills-directory>
+  <div class="rounded-xl border border-nav/25 bg-card/90 p-5 shadow-sm md:p-7">
+    <p class="text-xs font-bold uppercase tracking-[0.18em] text-nav">Steam Next Fest demo snapshot</p>
+    <h2 id="skills-directory-title" class="mt-2 text-2xl font-black tracking-tight md:text-3xl">
+      Search the Emberville skill directory
+    </h2>
+    <p class="mt-3 max-w-3xl leading-7 text-muted-foreground">
+      These skill names and roles were observed in the pre-release demo and can change before Early Access.
+      Exact damage, Kymia cost, cooldown, rank cap, and unlock-level values stay hidden until independently verified.
+    </p>
+  </div>
+
+  <div class="mt-6 grid gap-4 rounded-xl border bg-card/80 p-4 md:grid-cols-4" aria-label="Skill filters">
+    <label class="text-sm font-semibold">
+      Search
+      <input
+        type="search"
+        data-skill-search
+        placeholder="Skill name or purpose"
+        class="mt-2 w-full rounded-md border bg-background px-3 py-2 font-normal"
+      />
+    </label>
+    <label class="text-sm font-semibold">
+      Class
+      <select data-filter-class class="mt-2 w-full rounded-md border bg-background px-3 py-2 font-normal">
+        <option value="all">All classes</option>
+        <option value="knight">Knight</option>
+        <option value="mage">Mage</option>
+        <option value="wanderer">Wanderer</option>
+      </select>
+    </label>
+    <label class="text-sm font-semibold">
+      Type
+      <select data-filter-type class="mt-2 w-full rounded-md border bg-background px-3 py-2 font-normal">
+        <option value="all">All types</option>
+        <option value="active">Active</option>
+        <option value="passive">Passive</option>
+      </select>
+    </label>
+    <label class="text-sm font-semibold">
+      Evidence
+      <select data-filter-status class="mt-2 w-full rounded-md border bg-background px-3 py-2 font-normal">
+        <option value="all">All evidence</option>
+        <option value="demo-observed">Demo snapshot</option>
+        <option value="pending">待复核</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="mt-4 flex items-center justify-between gap-4 text-sm text-muted-foreground">
+    <p><strong class="text-foreground" data-visible-count>{EMBERVILLE_SKILLS.length}</strong> skills shown</p>
+    <p>Last checked: 2026-10-30</p>
+  </div>
+
+  <div class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3" data-skill-grid>
+    {EMBERVILLE_SKILLS.map((entry) => (
+      <article
+        class="rounded-xl border bg-card/90 p-5 shadow-sm transition hover:border-nav/50"
+        data-skill-card
+        data-class={entry.classKey}
+        data-type={entry.type}
+        data-status={entry.status}
+        data-search={`${entry.name} ${entry.purpose}`.toLowerCase()}
+      >
+        <div class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-wide">
+          <span class="rounded-full bg-nav/10 px-2.5 py-1 text-nav">{classNames.get(entry.classKey)}</span>
+          <span class="rounded-full bg-muted px-2.5 py-1 text-muted-foreground">{entry.type}</span>
+          <span class:list={[
+            'rounded-full px-2.5 py-1',
+            entry.status === 'pending' ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300' : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300',
+          ]}>{statusLabels[entry.status]}</span>
+        </div>
+        <h3 class="mt-4 text-xl font-bold">{entry.name}</h3>
+        <p class="mt-2 leading-6 text-muted-foreground">{entry.purpose}</p>
+        <p class="mt-4 border-t pt-3 text-xs text-muted-foreground">{entry.gameVersion}</p>
+      </article>
+    ))}
+  </div>
+
+  <p class="mt-8 hidden rounded-xl border border-amber-500/30 bg-amber-500/10 p-5 text-center" data-no-results>
+    No skills match these filters. Clear one filter and try again.
+  </p>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-skills-directory]');
+  if (root) {
+    const search = root.querySelector<HTMLInputElement>('[data-skill-search]');
+    const classFilter = root.querySelector<HTMLSelectElement>('[data-filter-class]');
+    const typeFilter = root.querySelector<HTMLSelectElement>('[data-filter-type]');
+    const statusFilter = root.querySelector<HTMLSelectElement>('[data-filter-status]');
+    const cards = [...root.querySelectorAll<HTMLElement>('[data-skill-card]')];
+    const count = root.querySelector<HTMLElement>('[data-visible-count]');
+    const noResults = root.querySelector<HTMLElement>('[data-no-results]');
+
+    const applyFilters = () => {
+      const query = search?.value.trim().toLowerCase() ?? '';
+      let visible = 0;
+      for (const card of cards) {
+        const matches =
+          (!query || card.dataset.search?.includes(query)) &&
+          (classFilter?.value === 'all' || card.dataset.class === classFilter?.value) &&
+          (typeFilter?.value === 'all' || card.dataset.type === typeFilter?.value) &&
+          (statusFilter?.value === 'all' || card.dataset.status === statusFilter?.value);
+        card.hidden = !matches;
+        if (matches) visible += 1;
+      }
+      if (count) count.textContent = String(visible);
+      if (noResults) noResults.hidden = visible !== 0;
+    };
+
+    search?.addEventListener('input', applyFilters);
+    classFilter?.addEventListener('change', applyFilters);
+    typeFilter?.addEventListener('change', applyFilters);
+    statusFilter?.addEventListener('change', applyFilters);
+  }
+</script>

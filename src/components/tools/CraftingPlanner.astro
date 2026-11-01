@@ -1,0 +1,244 @@
+---
+import { Icon } from 'astro-icon/components';
+import { verifiedEmbervilleRecipes } from '~/data/emberville-recipes';
+
+const hasRecipes = verifiedEmbervilleRecipes.length > 0;
+const categories = [...new Set(verifiedEmbervilleRecipes.map((recipe) => recipe.category))].sort();
+---
+
+<section class="space-y-6" data-crafting-planner>
+  <div class="grid gap-4 rounded-2xl border border-border bg-card/80 p-4 shadow-sm md:grid-cols-2 lg:grid-cols-4">
+    <label class="space-y-2 text-sm font-medium">
+      <span>Search recipes</span>
+      <span class="relative block">
+        <Icon name="lucide:search" class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <input
+          data-planner-search
+          type="search"
+          placeholder="Search output or material"
+          disabled={!hasRecipes}
+          class="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 disabled:cursor-not-allowed disabled:opacity-60"
+        />
+      </span>
+    </label>
+
+    <label class="space-y-2 text-sm font-medium">
+      <span>Category</span>
+      <select data-planner-category disabled={!hasRecipes} class="w-full rounded-lg border border-border bg-background px-3 py-2 disabled:cursor-not-allowed disabled:opacity-60">
+        <option value="">All categories</option>
+        {categories.map((category) => <option value={category}>{category}</option>)}
+      </select>
+    </label>
+
+    <label class="space-y-2 text-sm font-medium">
+      <span>Crafting goal</span>
+      <select data-planner-recipe disabled={!hasRecipes} class="w-full rounded-lg border border-border bg-background px-3 py-2 disabled:cursor-not-allowed disabled:opacity-60">
+        <option value="">Choose a verified recipe</option>
+        {verifiedEmbervilleRecipes.map((recipe) => <option value={recipe.id}>{recipe.outputName}</option>)}
+      </select>
+    </label>
+
+    <label class="space-y-2 text-sm font-medium">
+      <span>Quantity wanted</span>
+      <input data-planner-output type="number" min="1" step="1" value="1" disabled={!hasRecipes} class="w-full rounded-lg border border-border bg-background px-3 py-2 disabled:cursor-not-allowed disabled:opacity-60" />
+    </label>
+  </div>
+
+  {!hasRecipes && (
+    <div class="rounded-2xl border border-dashed border-nav/40 bg-nav/5 px-5 py-8 text-center">
+      <Icon name="lucide:shield-check" class="mx-auto h-9 w-9 text-nav" />
+      <h2 class="mt-3 text-xl font-bold">No verified recipes are available yet</h2>
+      <p class="mx-auto mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
+        This beta planner only publishes recipes backed by first-party or in-game evidence. We will enable the calculator as verified Emberville recipes are added—no competitor data or guessed material counts are used.
+      </p>
+    </div>
+  )}
+
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+    <section class="rounded-2xl border border-border bg-card/80 p-5">
+      <div class="flex items-center gap-2">
+        <Icon name="lucide:package-open" class="h-5 w-5 text-nav" />
+        <h2 class="text-xl font-bold">Your inventory</h2>
+      </div>
+      <p class="mt-2 text-sm text-muted-foreground">Owned material quantities stay in this browser and are never uploaded.</p>
+      <div data-planner-inventory class="mt-4 space-y-3">
+        <p class="rounded-lg bg-muted/60 px-3 py-4 text-sm text-muted-foreground">Choose a verified recipe to enter the materials you already own.</p>
+      </div>
+    </section>
+
+    <section class="rounded-2xl border border-border bg-card/80 p-5">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div class="flex items-center gap-2">
+            <Icon name="lucide:calculator" class="h-5 w-5 text-nav" />
+            <h2 class="text-xl font-bold">Shopping list</h2>
+          </div>
+          <p class="mt-2 text-sm text-muted-foreground">Required, owned, and missing totals update with your goal.</p>
+        </div>
+        <button data-copy-list type="button" disabled class="inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50">
+          <Icon name="lucide:copy" class="h-4 w-4" />
+          Copy list
+        </button>
+      </div>
+      <div data-planner-results aria-live="polite" class="mt-4 overflow-x-auto">
+        <p class="rounded-lg bg-muted/60 px-3 py-4 text-sm text-muted-foreground">Your calculated material list will appear here.</p>
+      </div>
+      <p data-planner-status aria-live="polite" class="mt-3 min-h-5 text-sm text-muted-foreground"></p>
+    </section>
+  </div>
+
+  <aside class="rounded-xl border border-border bg-muted/30 p-4 text-sm leading-6 text-muted-foreground">
+    <strong class="text-foreground">Beta data policy:</strong> every recipe must name its verified game version and evidence note. If a patch changes a recipe, the stored planner data is updated rather than silently estimated.
+  </aside>
+</section>
+
+<script>
+  import { verifiedEmbervilleRecipes } from '~/data/emberville-recipes';
+  import {
+    calculateCraftingPlan,
+    CRAFTING_PLANNER_STORAGE_VERSION,
+    decodeCraftingPlannerState,
+    parseCraftingQuantity,
+    type CraftingPlannerState,
+    type Inventory,
+  } from '~/lib/crafting-planner';
+
+  const STORAGE_KEY = 'emberville-crafting-planner:v1';
+  const root = document.querySelector<HTMLElement>('[data-crafting-planner]');
+
+  if (root) {
+    const search = root.querySelector<HTMLInputElement>('[data-planner-search]');
+    const category = root.querySelector<HTMLSelectElement>('[data-planner-category]');
+    const recipeSelect = root.querySelector<HTMLSelectElement>('[data-planner-recipe]');
+    const output = root.querySelector<HTMLInputElement>('[data-planner-output]');
+    const inventoryRoot = root.querySelector<HTMLElement>('[data-planner-inventory]');
+    const results = root.querySelector<HTMLElement>('[data-planner-results]');
+    const copy = root.querySelector<HTMLButtonElement>('[data-copy-list]');
+    const status = root.querySelector<HTMLElement>('[data-planner-status]');
+    let inventory: Record<string, number> = {};
+    let lastList = '';
+
+    const saved = decodeCraftingPlannerState(localStorage.getItem(STORAGE_KEY));
+    if (saved) {
+      inventory = { ...saved.inventory };
+      if (recipeSelect && verifiedEmbervilleRecipes.some((recipe) => recipe.id === saved.recipeId)) {
+        recipeSelect.value = saved.recipeId;
+      }
+      if (output) output.value = String(saved.outputQuantity);
+    }
+
+    function selectedRecipe() {
+      return verifiedEmbervilleRecipes.find((recipe) => recipe.id === recipeSelect?.value);
+    }
+
+    function save(recipeId: string, outputQuantity: number, values: Inventory) {
+      const state: CraftingPlannerState = {
+        version: CRAFTING_PLANNER_STORAGE_VERSION,
+        recipeId,
+        outputQuantity,
+        inventory: values,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function renderRecipeOptions() {
+      if (!recipeSelect) return;
+      const current = recipeSelect.value;
+      const query = search?.value.trim().toLowerCase() ?? '';
+      const categoryValue = category?.value ?? '';
+      const filtered = verifiedEmbervilleRecipes.filter((recipe) => {
+        const haystack = `${recipe.outputName} ${recipe.ingredients.map((item) => item.name).join(' ')}`.toLowerCase();
+        return (!query || haystack.includes(query)) && (!categoryValue || recipe.category === categoryValue);
+      });
+      recipeSelect.replaceChildren(new Option('Choose a verified recipe', ''));
+      for (const recipe of filtered) recipeSelect.add(new Option(recipe.outputName, recipe.id));
+      if (filtered.some((recipe) => recipe.id === current)) recipeSelect.value = current;
+      render();
+    }
+
+    function renderInventory() {
+      if (!inventoryRoot) return;
+      const recipe = selectedRecipe();
+      if (!recipe) {
+        inventoryRoot.innerHTML = '<p class="rounded-lg bg-muted/60 px-3 py-4 text-sm text-muted-foreground">Choose a verified recipe to enter the materials you already own.</p>';
+        return;
+      }
+      const unique = new Map(recipe.ingredients.map((item) => [item.id.trim().toLowerCase(), item]));
+      inventoryRoot.replaceChildren();
+      for (const [id, item] of unique) {
+        const label = document.createElement('label');
+        label.className = 'grid grid-cols-[minmax(0,1fr)_7rem] items-center gap-3 text-sm';
+        const name = document.createElement('span');
+        name.textContent = item.name;
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.step = '1';
+        input.value = String(inventory[id] ?? 0);
+        input.className = 'w-full rounded-lg border border-border bg-background px-3 py-2';
+        input.setAttribute('aria-label', `${item.name} owned`);
+        input.addEventListener('input', () => {
+          const value = Number(input.value);
+          if (Number.isSafeInteger(value) && value >= 0) inventory[id] = value;
+          renderResults();
+        });
+        label.append(name, input);
+        inventoryRoot.append(label);
+      }
+    }
+
+    function renderResults() {
+      if (!results || !output || !recipeSelect || !copy) return;
+      const recipe = selectedRecipe();
+      const quantity = parseCraftingQuantity(output.value);
+      if (!recipe || quantity === null) {
+        results.innerHTML = '<p class="rounded-lg bg-muted/60 px-3 py-4 text-sm text-muted-foreground">Choose a recipe and enter a positive whole-number quantity.</p>';
+        copy.disabled = true;
+        lastList = '';
+        return;
+      }
+      const rows = calculateCraftingPlan(recipe, inventory, quantity);
+      const table = document.createElement('table');
+      table.className = 'w-full min-w-[32rem] text-left text-sm';
+      table.innerHTML = '<thead><tr class="border-b border-border"><th class="px-3 py-2">Material</th><th class="px-3 py-2">Required</th><th class="px-3 py-2">Owned</th><th class="px-3 py-2">Missing</th></tr></thead>';
+      const body = document.createElement('tbody');
+      for (const row of rows) {
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-border/70';
+        for (const value of [row.name, row.required, row.owned, row.missing]) {
+          const td = document.createElement('td');
+          td.className = 'px-3 py-2';
+          td.textContent = String(value);
+          tr.append(td);
+        }
+        body.append(tr);
+      }
+      table.append(body);
+      results.replaceChildren(table);
+      lastList = rows.map((row) => `${row.name}: ${row.missing} missing (${row.required} required, ${row.owned} owned)`).join('\n');
+      copy.disabled = rows.length === 0;
+      save(recipe.id, quantity, inventory);
+    }
+
+    function render() {
+      renderInventory();
+      renderResults();
+    }
+
+    search?.addEventListener('input', renderRecipeOptions);
+    category?.addEventListener('change', renderRecipeOptions);
+    recipeSelect?.addEventListener('change', render);
+    output?.addEventListener('input', renderResults);
+    copy?.addEventListener('click', async () => {
+      if (!lastList || !status) return;
+      try {
+        await navigator.clipboard.writeText(lastList);
+        status.textContent = 'Shopping list copied.';
+      } catch {
+        status.textContent = 'Copy failed. Select the table text and copy it manually.';
+      }
+    });
+
+    render();
+  }
+</script>

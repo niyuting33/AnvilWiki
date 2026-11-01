@@ -1,0 +1,22 @@
+---
+import SkillsDirectory from '~/components/database/SkillsDirectory.astro';
+import LocaleLayout from '~/components/layout/LocaleLayout.astro';
+import CategoryVideo from '~/components/video/CategoryVideo.astro';
+
+const title = 'Emberville 技能数据库 — 职业、主动与被动技能';
+const description =
+  '按职业、主动或被动类型及证据状态筛选 Emberville 技能；Demo 技能会标注版本信息，未经核实的精确数值不会发布。';
+---
+
+<LocaleLayout locale="zh" {title} {description} availableLocales={['en', 'zh']}>
+  <header class="mx-auto max-w-4xl text-center">
+    <p class="text-sm font-bold uppercase tracking-[0.2em] text-nav">版本敏感数据库</p>
+    <h1 class="mt-3 text-4xl font-black tracking-tight md:text-5xl">Emberville 技能</h1>
+    <p class="mt-4 text-lg leading-8 text-muted-foreground">
+      当前目录收录 Steam Next Fest Demo
+      中观察到的技能名称和用途。伤害、消耗、冷却和等级等精确数值需要复核后才会发布。
+    </p>
+  </header>
+  <div class="mt-10"><SkillsDirectory /></div>
+  <div class="mt-10"><CategoryVideo category="skills" locale="zh" /></div>
+</LocaleLayout>
