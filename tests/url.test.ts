@@ -128,6 +128,16 @@ describe('absoluteUrl', () => {
 });
 
 describe('languageAlternates', () => {
+  it('omits locales that are temporarily hidden from the public site', () => {
+    const alts = languageAlternates(
+      (loc) => detailPath('guides', 'beginner-guide', loc),
+      ['en', 'zh'],
+    );
+    expect(alts).toEqual([
+      { hreflang: 'en', href: expect.stringMatching(/\/guides\/beginner-guide\/$/) },
+    ]);
+  });
+
   it('builds absolute hreflang entries for exactly the given locales', () => {
     const alts = languageAlternates((loc) => detailPath('bosses', 'x', loc), ['en', 'ja']);
     expect(alts).toHaveLength(2);

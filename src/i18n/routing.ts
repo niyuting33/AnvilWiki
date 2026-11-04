@@ -19,6 +19,18 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = 'en';
 
+/**
+ * Locales temporarily hidden from public discovery while their article sets
+ * are incomplete. Keep them in `locales` so translation files and authoring
+ * routes remain available; UI, hreflang and sitemap consumers use
+ * `isLocalePublic()` to avoid advertising thin/empty language versions.
+ */
+export const hiddenLocales = ['zh'] as const;
+
+export function isLocalePublic(locale: string): boolean {
+  return !(hiddenLocales as readonly string[]).includes(locale);
+}
+
 /** English label for each locale (used in language switcher). */
 export const LOCALE_LABELS: Record<Locale, string> = {
   en: 'English',

@@ -5,7 +5,7 @@
  * English (default locale) has no prefix; other locales are prefixed.
  */
 
-import { defaultLocale, type Locale } from '~/i18n/routing';
+import { defaultLocale, isLocalePublic, type Locale } from '~/i18n/routing';
 import { siteUrl } from '~/config/site';
 import { landingLinkEnabled } from '~/config/project';
 
@@ -90,7 +90,7 @@ export function languageAlternates(
   buildPath: (locale: Locale) => string,
   locales: readonly Locale[],
 ): Array<{ hreflang: string; href: string }> {
-  return locales.map((loc) => ({
+  return locales.filter(isLocalePublic).map((loc) => ({
     hreflang: loc,
     href: siteAbsolute(buildPath(loc)),
   }));

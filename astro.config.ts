@@ -6,7 +6,7 @@ import icon from 'astro-icon';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-import { locales, defaultLocale } from './src/i18n/routing';
+import { locales, defaultLocale, isLocalePublic } from './src/i18n/routing';
 import { CONTENT_TYPES } from './src/config/navigation';
 import { fallbackDetailPaths } from './src/lib/fallback-paths';
 import { landingLinkEnabled } from './src/config/project';
@@ -255,13 +255,15 @@ function alternatesFor(pagePath: string): Array<{ lang: string; url: string }> |
     // advertised as hreflang alternates.
     const cov = detailCoverage.get(`${art[2]}/${art[3]}`);
     if (cov) {
-      return Array.from(cov).map((l) => ({
-        lang: l,
-        url: new URL(
-          l === defaultLocale ? `/${art[2]}/${art[3]}/` : `/${l}/${art[2]}/${art[3]}/`,
-          siteOrigin,
-        ).href,
-      }));
+      return Array.from(cov)
+        .filter(isLocalePublic)
+        .map((l) => ({
+          lang: l,
+          url: new URL(
+            l === defaultLocale ? `/${art[2]}/${art[3]}/` : `/${l}/${art[2]}/${art[3]}/`,
+            siteOrigin,
+          ).href,
+        }));
     }
   }
   // Category list: only locales that actually have an article in the
@@ -275,10 +277,12 @@ function alternatesFor(pagePath: string): Array<{ lang: string; url: string }> |
   ) {
     const catCov = categoryCoverage.get(list[2]);
     if (!catCov) return undefined;
-    return Array.from(catCov).map((l) => ({
-      lang: l,
-      url: new URL(l === defaultLocale ? `/${list[2]}/` : `/${l}/${list[2]}/`, siteOrigin).href,
-    }));
+    return Array.from(catCov)
+      .filter(isLocalePublic)
+      .map((l) => ({
+        lang: l,
+        url: new URL(l === defaultLocale ? `/${list[2]}/` : `/${l}/${list[2]}/`, siteOrigin).href,
+      }));
   }
   return undefined;
 }
@@ -331,6 +335,9 @@ export default defineConfig({
       // (landingLinkEnabled=false there). /demo/ is produced by src/pages/
       // demo.astro and gets collected automatically.
       filter: (url) =>
+        isLocalePublic(
+          normalizePath(decodeSitemapPath(url)).split('/').filter(Boolean)[0] ?? defaultLocale,
+        ) &&
         !noindexPaths.has(normalizePath(decodeSitemapPath(url))) &&
         !(landingLinkEnabled && normalizePath(decodeSitemapPath(url)) === '/'),
       // Inject <lastmod> from article frontmatter (see buildLastmodMap) and

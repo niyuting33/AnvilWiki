@@ -1,0 +1,5 @@
+# Chinese wiki pages are temporarily unpublished until the translations are complete.
+# Preserve path intent by sending old /zh/... links to their English counterparts.
+/zh / 301
+/zh/ / 301
+/zh/* /:splat 301

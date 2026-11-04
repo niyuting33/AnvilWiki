@@ -6,7 +6,7 @@
 import { Icon } from 'astro-icon/components';
 import { NAVIGATION_CONFIG, PRIMARY_NAV_KEYS } from '~/config/navigation';
 import { site } from '~/config/site';
-import { type Locale, defaultLocale, locales, LOCALE_LABELS } from '~/i18n/routing';
+import { type Locale, defaultLocale, isLocalePublic, locales, LOCALE_LABELS } from '~/i18n/routing';
 import { getUi } from '~/i18n/ui';
 import { homeUrl, localizePath } from '~/lib/url';
 import ThemeToggle from './ThemeToggle.astro';
@@ -29,7 +29,7 @@ const { locale, currentPath, availableLocales } = Astro.props;
 const ui = getUi(locale);
 const nav: Record<string, string> = ui.nav as Record<string, string>;
 
-const headerLocales = availableLocales ?? locales;
+const headerLocales = (availableLocales ?? locales).filter(isLocalePublic);
 const populatedKeys = new Set(
   (await getDynamicNavigation(locale, nav))
     .filter((group) => group.count > 0)

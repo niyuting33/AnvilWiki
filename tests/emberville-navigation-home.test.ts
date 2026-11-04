@@ -6,6 +6,21 @@ const root = process.cwd();
 const read = (path: string) => fs.readFileSync(join(root, path), 'utf8');
 
 describe('Emberville useful navigation and homepage actions', () => {
+  test('unfinished Chinese locale is hidden, redirected, and excluded from search discovery', () => {
+    const routing = read('src/i18n/routing.ts');
+    const header = read('src/components/header/SiteHeader.astro');
+    const switcher = read('src/components/header/LanguageSwitcher.astro');
+    const astroConfig = read('astro.config.ts');
+    const redirects = read('public/_redirects');
+
+    expect(routing).toMatch(/hiddenLocales\s*=\s*\['zh'\]/);
+    expect(header).toContain('isLocalePublic');
+    expect(switcher).toContain('isLocalePublic');
+    expect(astroConfig).toContain('isLocalePublic');
+    expect(redirects).toContain('/zh/ / 301');
+    expect(redirects).toContain('/zh/* /:splat 301');
+  });
+
   test('header exposes only live content categories and no unavailable tools', () => {
     const navigation = read('src/config/navigation.ts');
     const header = read('src/components/header/SiteHeader.astro');
