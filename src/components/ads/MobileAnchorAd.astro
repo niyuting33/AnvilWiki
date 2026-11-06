@@ -27,13 +27,15 @@
 import { Icon } from 'astro-icon/components';
 import AdsterraSlot from './AdsterraSlot.astro';
 import { currentSharedStrings } from '~/lib/shared-ui';
+import { clarityProjectId } from '~/config/analytics';
 
 const show = !!import.meta.env.PUBLIC_ADSTERRA_SLOT_STICKY_320X50;
 // Same env condition under which BaseLayout renders CookieConsent — when
 // either is set the consent promise is live and the anchor must wait for it.
 const consentBannerActive = !!(
   (import.meta.env.PUBLIC_GA_ID as string | undefined) ||
-  (import.meta.env.PUBLIC_ADSENSE_CLIENT as string | undefined)
+  (import.meta.env.PUBLIC_ADSENSE_CLIENT as string | undefined) ||
+  clarityProjectId
 );
 const sharedStrings = currentSharedStrings(Astro.currentLocale);
 const closeAd = sharedStrings.closeAd ?? 'Close ad';

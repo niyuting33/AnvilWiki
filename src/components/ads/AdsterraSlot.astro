@@ -50,6 +50,7 @@ interface Props {
 }
 
 import { currentSharedStrings } from '~/lib/shared-ui';
+import { clarityProjectId } from '~/config/analytics';
 
 const { name, width, height, label = true, hideOnMobile = false } = Astro.props;
 const envKey = `PUBLIC_ADSTERRA_SLOT_${name.replace(/-/g, '_').toUpperCase()}`;
@@ -58,7 +59,8 @@ const show = !!import.meta.env[envKey];
 // either is set the banner (and its consent promise) is live on every page.
 const consentBannerActive = !!(
   (import.meta.env.PUBLIC_GA_ID as string | undefined) ||
-  (import.meta.env.PUBLIC_ADSENSE_CLIENT as string | undefined)
+  (import.meta.env.PUBLIC_ADSENSE_CLIENT as string | undefined) ||
+  clarityProjectId
 );
 const iframeSrc = `/ads/${name}.html`;
 const sharedStrings = currentSharedStrings(Astro.currentLocale);

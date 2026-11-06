@@ -3,7 +3,7 @@
  * CookieConsent — GDPR/ePrivacy consent banner that actually GATES tracking.
  *
  * How it works (with BaseLayout):
- *   - BaseLayout no longer injects GA / AdSense statically. Instead it defines
+ *   - BaseLayout never injects GA / AdSense / Clarity statically. Instead it defines
  *     `window.__awLoadTrackers()` which injects them dynamically.
  *   - This component shows a banner when no choice is stored (only rendered
  *     at all when tracking env vars are set — see BaseLayout).
@@ -70,7 +70,7 @@ const { labels, privacyHref, privacyLabel } = Astro.props;
 </div>
 
 <script>
-  // Type the tracker loader defined in BaseLayout (consent-gated GA/AdSense).
+  // Type the tracker loader defined in BaseLayout (consent-gated GA/AdSense/Clarity).
   declare global {
     interface Window {
       __awLoadTrackers?: () => void;

@@ -17,6 +17,7 @@ import { organizationJsonLd } from '~/lib/seo';
 import JsonLd from '~/components/seo/JsonLd.astro';
 import CookieConsent from './CookieConsent.astro';
 import { getUi } from '~/i18n/ui';
+import { clarityProjectId } from '~/config/analytics';
 
 interface Props {
   title: string;
@@ -246,11 +247,26 @@ const privacyLabel = consent?.privacyLabel ?? footerStrings.privacyPolicy ?? 'Pr
       the visitor accepts. See GDPR note in AGENTS.md. No tracking env vars
       → this block renders nothing → zero JS.
     */}
-    {(gaId || adsenseClient) && (
-      <script is:inline define:vars={{ gaId, adsenseClient }}>
+    {(gaId || adsenseClient || clarityProjectId) && (
+      <script is:inline define:vars={{ gaId, adsenseClient, clarityProjectId }}>
         window.__awLoadTrackers = () => {
           if (window.__awTrackersLoaded) return;
           window.__awTrackersLoaded = true;
+          if (clarityProjectId) {
+            window.clarity = window.clarity || function () {
+              (window.clarity.q = window.clarity.q || []).push(arguments);
+            };
+            // Queue consent before the async tag executes. Analytics only;
+            // Microsoft Ads data sharing is not enabled by this integration.
+            window.clarity('consentv2', {
+              analytics_Storage: 'granted',
+              ad_Storage: 'denied',
+            });
+            const s = document.createElement('script');
+            s.async = true;
+            s.src = 'https://www.clarity.ms/tag/' + clarityProjectId;
+            document.head.appendChild(s);
+          }
           if (gaId) {
             const s = document.createElement('script');
             s.async = true;
@@ -352,7 +368,7 @@ const privacyLabel = consent?.privacyLabel ?? footerStrings.privacyPolicy ?? 'Pr
   <body class="min-h-screen bg-background text-foreground antialiased">
     <slot />
     {/* Consent banner — only rendered when tracking env vars are set. */}
-    {(gaId || adsenseClient) && (
+    {(gaId || adsenseClient || clarityProjectId) && (
       <CookieConsent
         labels={{
           title: consentLabels.title,
